@@ -164,7 +164,7 @@ app.get("/api/shoes", (req,res) => {
     res.json(items);
 });
 
-app.post("/api/shoes", upload.single("img"), (req,res)=> {
+app.post("/api/shoes", upload.single("image"), (req,res)=> {
     console.log("In a post request");
 
     const result = validateItem(req.body);
