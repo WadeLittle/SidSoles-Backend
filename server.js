@@ -1,11 +1,22 @@
-
 const express = require("express");
 const cors = require("cors");
 const app = express();
-
+const Joi = require("joi");
 app.use(cors());
 app.use(express.static("public"));
+const multer = require("multer");
 
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "./public/images/");
+  },
+  filename: (req, file, cb) => {
+    cb(null, file.originalname);
+  },
+});
+
+const upload = multer({ storage: storage });
+  
 const items = [
     {
         "id": 1,
@@ -152,6 +163,59 @@ app.get("/", (req,res) => {
 app.get("/api/shoes", (req,res) => {
     res.json(items);
 });
+
+app.post("/api/shoes", upload.single("img"), (req,res)=> {
+    console.log("In a post request");
+
+    const result = validateItem(req.body);
+
+    if(result.error)  {
+        res.status(400).send(result.error.details[0].message);
+        console.log("I have an error");
+        return;
+    }
+
+    const item = {
+        brand:req.body.brand,
+        title:req.body.title,
+        sku:req.body.sku,
+        sizes:req.body.sizes.split(',').map(Number), // Ensure sizes are handled as an array of numbers
+        price:req.body.price,
+        condition:req.body.condition
+    }
+    if(req.file){
+        item.image = req.file.filename;
+    }
+    items.push(item);
+    console.log(item);
+    res.status(200).send(item);
+});
+
+const validateItem = (item)=> {
+    const schema = Joi.object({
+        brand:Joi.string().required(),
+        title:Joi.string().required(),
+        sku:Joi.string().required(),
+        sizes:Joi.string().required(),
+        price:Joi.number().required(),
+        condition:Joi.string().required(),
+    });
+    return schema.validate(item);
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 app.listen(3001, () => {
     console.log("Listening....");
   });
