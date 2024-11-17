@@ -179,7 +179,7 @@ app.post("/api/shoes", upload.single("image"), (req,res)=> {
         brand:req.body.brand,
         title:req.body.title,
         sku:req.body.sku,
-        sizes:req.body.sizes.split(',').map(Number), // Ensure sizes are handled as an array of numbers
+        sizes: JSON.parse(req.body.sizes),
         price:req.body.price,
         condition:req.body.condition
     }
