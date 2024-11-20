@@ -191,6 +191,38 @@ app.post("/api/shoes", upload.single("image"), (req,res)=> {
     res.status(200).send(item);
 });
 
+app.put("/api/shoes/:id", upload.single("image"), (req,res)=>{
+    const item = items.find((item)=>item._id ===parseInt(req.params.id));
+  
+    if(!item){
+      res.status(404).send("The house with the provided id was not found");
+      return;
+    }
+  
+    const result = validateItem(req.body);
+  
+    if(result.error){
+      res.status(400).send(result.error.details[0].message);
+      return;
+    }
+  
+    item.brand = req.body.brand;
+    item.title = req.body.title;
+    item.sku = req.body.sku;
+    item.sizes = JSON.parse(req.body.sizes);
+    item.price = req.body.price;
+    item.condition = req.body.condition;
+  
+    if(req.file){
+      item.image = req.file.filename;
+    }
+  
+    res.status(200).send(house);
+  });
+
+
+
+
 const validateItem = (item)=> {
     const schema = Joi.object({
         brand:Joi.string().required(),
