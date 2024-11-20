@@ -19,7 +19,7 @@ const upload = multer({ storage: storage });
   
 const items = [
     {
-        "id": 1,
+        "_id": 1,
         "brand": "jordan",
         "title": "Jordan 4 Retro White Thunder",
         "image": "jordan-4-white-thunder.jpg",
@@ -34,7 +34,7 @@ const items = [
         "carted": false
     },
     {
-        "id": 2,
+        "_id": 2,
         "brand": "yeezy",
         "title": "Adidas Yeezy Boost 350 V2 Black (Non-Reflective)",
         "image": "350-black.png",
@@ -49,7 +49,7 @@ const items = [
         "carted": false
     },
     {
-        "id": 3,
+        "_id": 3,
         "brand": "yeezy",
         "title": "Adidas Yeezy Slide Onyx",
         "image": "yeezy-slide-onyx.jpg",
@@ -64,7 +64,7 @@ const items = [
         "carted": false
     },
     {
-        "id": 4,
+        "_id": 4,
         "brand": "jordan",
         "title": "Jordan 4 Retro Thunder (2023)",
         "image": "jordan-4-thunder.jpg",
@@ -79,7 +79,7 @@ const items = [
         "carted": false
     },
     {
-        "id": 5,
+        "_id": 5,
         "brand": "dunk",
         "title": "Nike Dunk Low Retro White Black Panda (2021)",
         "image": "panda-dunk.png",
@@ -94,7 +94,7 @@ const items = [
         "carted": false
     },
     {
-        "id": 6,
+        "_id": 6,
         "brand": "dunk",
         "title": "Nike Dunk Low Triple Pink (GS)",
         "image": "triple-pink-dunk.jpg ",
@@ -109,7 +109,7 @@ const items = [
         "carted": false
     },
     {
-        "id": 7,
+        "_id": 7,
         "brand": "yeezy",
         "title": "Adidas Yeezy Boost 350 V2 Bone",
         "image": "yeezy-350-bone.jpg",
@@ -124,7 +124,7 @@ const items = [
         "carted": false
     },
     {
-        "id": 8,
+        "_id": 8,
         "brand": "jordan",
         "title": "Jordan 11 Retro Cool Grey (2021)",
         "image": "cool-grey-11.png",
@@ -139,7 +139,7 @@ const items = [
         "carted": false
     },
     {
-        "id": 9,
+        "_id": 9,
         "brand": "dunk",
         "title": "Nike Dunk Low UNC (2021)",
         "image": "unc-dunk.jpg",
