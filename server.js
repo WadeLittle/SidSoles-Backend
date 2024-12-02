@@ -192,8 +192,8 @@ app.post("/api/shoes", upload.single("image"), (req,res)=> {
     res.status(200).send(item);
 });
 
-app.put("/api/shoes/:_id", upload.single("image"), (req,res)=>{
-    const item = items.find((item)=>item._id ===parseInt(req.params._id));
+app.put("/api/shoes/:id", upload.single("image"), (req,res)=>{
+    const item = items.find((item)=>item._id ===parseInt(req.params.id));
   
     if(!item){
       res.status(404).send("The house with the provided id was not found");
@@ -219,6 +219,19 @@ app.put("/api/shoes/:_id", upload.single("image"), (req,res)=>{
     res.status(200).send(item);
   });
 
+
+  app.delete("/api/shoes/:id", (req,res)=>{
+    const item = items.find((item)=>item._id ===parseInt(req.params.id));
+  
+    if(!item){
+      res.status(404).send("The item with the provided id was not found");
+      return;
+    }
+  
+    const index = items.indexOf(item);
+    items.splice(index,1);
+    res.status(200).send(item);
+  });
 
 
 
