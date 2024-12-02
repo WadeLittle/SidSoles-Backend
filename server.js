@@ -176,6 +176,7 @@ app.post("/api/shoes", upload.single("image"), (req,res)=> {
     }
 
     const item = {
+        _id:req.body._id,
         brand:req.body.brand,
         title:req.body.title,
         sku:req.body.sku,
@@ -191,21 +192,19 @@ app.post("/api/shoes", upload.single("image"), (req,res)=> {
     res.status(200).send(item);
 });
 
-app.put("/api/shoes/:id", upload.single("image"), (req,res)=>{
-    const item = items.find((item)=>item._id ===parseInt(req.params.id));
+app.put("/api/shoes/:_id", upload.single("image"), (req,res)=>{
+    const item = items.find((item)=>item._id ===parseInt(req.params._id));
   
     if(!item){
       res.status(404).send("The house with the provided id was not found");
       return;
     }
-  
     const result = validateItem(req.body);
-  
+    
     if(result.error){
       res.status(400).send(result.error.details[0].message);
       return;
     }
-  
     item.brand = req.body.brand;
     item.title = req.body.title;
     item.sku = req.body.sku;
@@ -217,7 +216,7 @@ app.put("/api/shoes/:id", upload.single("image"), (req,res)=>{
       item.image = req.file.filename;
     }
   
-    res.status(200).send(house);
+    res.status(200).send(item);
   });
 
 
