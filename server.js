@@ -5,6 +5,7 @@ const Joi = require("joi");
 app.use(cors());
 app.use(express.static("public"));
 const multer = require("multer");
+const mongoose = require("mongoose");
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -16,156 +17,38 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage: storage });
+
+mongoose 
+.connect("mongodb+srv://portia:SB1QdULIQxPwE7i2@cluster0.tfvcs.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+.then(()=> {console.log("Connected to MongoDB");})
+.catch((error) => {
+    console.log("couldn't connect to MongoDB", error);
+});
   
-const items = [
-    {
-        "_id": 1,
-        "brand": "jordan",
-        "title": "Jordan 4 Retro White Thunder",
-        "image": "jordan-4-white-thunder.jpg",
-        "sku": "FQ8138-001",
-        "sizes": [
-            6,
-            7,
-            8
-        ],
-        "price": 350,
-        "condition": "Brand New",
-        "carted": false
-    },
-    {
-        "_id": 2,
-        "brand": "yeezy",
-        "title": "Adidas Yeezy Boost 350 V2 Black (Non-Reflective)",
-        "image": "350-black.png",
-        "sku": "FU9006",
-        "sizes": [
-            6,
-            7,
-            8
-        ],
-        "price": 300,
-        "condition": "Brand New",
-        "carted": false
-    },
-    {
-        "_id": 3,
-        "brand": "yeezy",
-        "title": "Adidas Yeezy Slide Onyx",
-        "image": "yeezy-slide-onyx.jpg",
-        "sku": "HQ6448",
-        "sizes": [
-            6,
-            7,
-            8
-        ],
-        "price": 180,
-        "condition": "Brand New",
-        "carted": false
-    },
-    {
-        "_id": 4,
-        "brand": "jordan",
-        "title": "Jordan 4 Retro Thunder (2023)",
-        "image": "jordan-4-thunder.jpg",
-        "sku": "DH6927-017",
-        "sizes": [
-            6,
-            7,
-            8
-        ],
-        "price": 350,
-        "condition": "Brand New",
-        "carted": false
-    },
-    {
-        "_id": 5,
-        "brand": "dunk",
-        "title": "Nike Dunk Low Retro White Black Panda (2021)",
-        "image": "panda-dunk.png",
-        "sku": "DD1391-100",
-        "sizes": [
-            6,
-            7,
-            8
-        ],
-        "price": 140,
-        "condition": "Brand New",
-        "carted": false
-    },
-    {
-        "_id": 6,
-        "brand": "dunk",
-        "title": "Nike Dunk Low Triple Pink (GS)",
-        "image": "triple-pink-dunk.jpg ",
-        "sku": "DH9765-600",
-        "sizes": [
-            6,
-            7,
-            8
-        ],
-        "price": 160,
-        "condition": "Brand New",
-        "carted": false
-    },
-    {
-        "_id": 7,
-        "brand": "yeezy",
-        "title": "Adidas Yeezy Boost 350 V2 Bone",
-        "image": "yeezy-350-bone.jpg",
-        "sku": "HQ6316",
-        "sizes": [
-            6,
-            7,
-            8
-        ],
-        "price": 225,
-        "condition": "Brand New",
-        "carted": false
-    },
-    {
-        "_id": 8,
-        "brand": "jordan",
-        "title": "Jordan 11 Retro Cool Grey (2021)",
-        "image": "cool-grey-11.png",
-        "sku": "CT8012-005",
-        "sizes": [
-            6,
-            7,
-            8
-        ],
-        "price": 400,
-        "condition": "Brand New",
-        "carted": false
-    },
-    {
-        "_id": 9,
-        "brand": "dunk",
-        "title": "Nike Dunk Low UNC (2021)",
-        "image": "unc-dunk.jpg",
-        "sku": "DD1391-102",
-        "sizes": [
-            6,
-            7,
-            8
-        ],
-        "price": 280,
-        "condition": "Brand New",
-        "carted": false
-    }
-];
+const itemSchema = new mongoose.Schema({
+    brand: String,
+    title: String,
+    sku: String,
+    sizes: Array,
+    price: Number,
+    condition: String,
+    image: String
+});
+
+const Item = mongoose.model("Item", itemSchema);
+
 
 
 app.get("/", (req,res) => {
     res.sendFile(__dirname + "/index.html");
 });
 
-app.get("/api/shoes", (req,res) => {
-    res.json(items);
+app.get("/api/shoes", async(req,res) => {
+   const items = await Item.find();
+   res.send(items);
 });
 
-app.post("/api/shoes", upload.single("image"), (req,res)=> {
-    console.log("In a post request");
+app.post("/api/shoes", upload.single("image"), async(req,res)=> {
 
     const result = validateItem(req.body);
 
@@ -175,21 +58,19 @@ app.post("/api/shoes", upload.single("image"), (req,res)=> {
         return;
     }
 
-    const item = {
-        _id:req.body._id,
+    const item = new Item({
         brand:req.body.brand,
         title:req.body.title,
         sku:req.body.sku,
         sizes: JSON.parse(req.body.sizes),
         price:req.body.price,
         condition:req.body.condition
-    }
+    });
     if(req.file){
         item.image = req.file.filename;
     }
-    items.push(item);
-    console.log(item);
-    res.status(200).send(item);
+   const newItem = await item.save();
+    res.status(200).send(newItem);
 });
 
 app.put("/api/shoes/:id", upload.single("image"), (req,res)=>{
@@ -220,16 +101,8 @@ app.put("/api/shoes/:id", upload.single("image"), (req,res)=>{
   });
 
 
-  app.delete("/api/shoes/:id", (req,res)=>{
-    const item = items.find((item)=>item._id ===parseInt(req.params.id));
-  
-    if(!item){
-      res.status(404).send("The item with the provided id was not found");
-      return;
-    }
-  
-    const index = items.indexOf(item);
-    items.splice(index,1);
+  app.delete("/api/shoes/:id", async(req,res)=>{
+    const item = await Item.findByIdAndDelete(req.params.id);
     res.status(200).send(item);
   });
 
